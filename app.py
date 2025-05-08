@@ -7,17 +7,14 @@ from oauth2client.service_account import ServiceAccountCredentials
 from streamlit_gsheets import GSheetsConnection
 from datetime import datetime
 
-#%% Connect to the spreadsheet
-url = "https://docs.google.com/spreadsheets/d/1xVKoVmKZOpNZ1oBySdLTE5GXZwN66UNoKjaBoEifZss/edit?usp=sharing"
-
-# Create a connection object
+#%% Create a connection object
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Create raw Budget dataframe
-budget_df = conn.read(spreadsheet =url, usecols=list(range(15)), worksheet=832591380, ttl=5)
+budget_df = conn.read(usecols=list(range(15)), worksheet=st.secrets["connections"]["gsheets"]["wk1"], ttl=5)
 
 # Create raw Actual dataframe
-actual_df = conn.read(spreadsheet =url, usecols=list(range(15)), worksheet=487806377, ttl=5)
+actual_df = conn.read(usecols=list(range(15)), worksheet=st.secrets["connections"]["gsheets"]["wk2"], ttl=5)
 
 #%% Clean table
 
@@ -123,12 +120,12 @@ with st.sidebar:
 
                 # Read current value
                 current_value = sheet_by_name.cell(row_index, col_index).value
-                new_value = float(current_value or 0) + 10
+                new_value = float(current_value or 0) + amt
 
                 # Update Category
                 sheet_by_name.update_cell(row_index, col_index, new_value)
 
-                if card is not "Chase": # I don't make updates if I paid with my chase
+                if card != "Chase": # I don't make updates if I paid with my chase
                     # Update Debt
                     sheet_by_name.update_cell(row_index, col_index, new_value)
                     row_index = col_B.index("Deuda") + 1
@@ -143,7 +140,7 @@ with st.sidebar:
                 st.error("Please fill out the form correctly.")
 
 # Header 1
-st.header('Family Aguilar Budget')
+st.header('👪🏼 Family Aguilar Budget')
 
 st.divider()
 

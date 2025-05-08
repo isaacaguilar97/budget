@@ -70,7 +70,7 @@ final_df = pd.DataFrame({
 })
 
 # Parameters
-col_inter = ['Food', 'Supplies', 'Self Care', 'Isaac', 'Adri', 'Eliam', 'Dates/Fun', 'Gifts', 'Fast Food', 'Junk Food']
+col_inter = ['Food', 'Supplies', 'Self Care', 'Isaac', 'Adri', 'Eliam', 'Dates/Fun', 'Gifts', 'Dineout', 'Snacks']
 filtered_df = final_df[final_df['Category'].isin(col_inter)]
 
 # Authenticate and connect to Google Sheets
@@ -102,7 +102,7 @@ with st.sidebar:
 
     with st.form(key="Enter your Transaction"):
         amt = st.number_input("Amount")
-        cty = st.selectbox("Category", col_inter)
+        cty = st.selectbox("Category", final_df.Category.to_list())
         card = st.selectbox("Payment Method", ['Silver', 'Barclays', 'DFCU', 'Venture', 'Cosco', 'Chase'])
         # Submit button inside the form
         submitted = st.form_submit_button("Submit")
@@ -140,7 +140,7 @@ with st.sidebar:
                 st.error("Please fill out the form correctly.")
 
 # Header 1
-st.header('👪🏼 Family Aguilar Budget')
+st.header('Family Aguilar Budget')
 
 st.divider()
 
@@ -154,7 +154,7 @@ for i in range(filtered_df.shape[0]):
     fig = go.Figure(go.Indicator(
         mode = "gauge,delta", 
         value = but - bal,
-        domain = {'x': [0.15, 1], 'y': [0, 1]},
+        domain = {'x': [0.3, 1], 'y': [0, 1]},
         title = {'text' :f"<b>{cat}</b>"},
         delta = {'reference': but - 2*bal, 
                  "valueformat": "$.0f",
@@ -170,8 +170,9 @@ for i in range(filtered_df.shape[0]):
                 'value': but}
             }))
     fig.update_layout(
-        height = 60,
+        height = 40,
         margin=dict(t=0, b=0),
         autosize=True 
         )
-    st.plotly_chart(fig)
+    
+    st.plotly_chart(fig, config={"displayModeBar": False})

@@ -11,10 +11,10 @@ from datetime import datetime
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Create raw Budget dataframe
-budget_df = conn.read(usecols=list(range(15)), worksheet=st.secrets["connections"]["gsheets"]["wk1"], ttl=5)
+budget_df = conn.read(usecols=list(range(15)), worksheet=832591380, ttl=5)
 
 # Create raw Actual dataframe
-actual_df = conn.read(usecols=list(range(15)), worksheet=st.secrets["connections"]["gsheets"]["wk2"], ttl=5)
+actual_df = conn.read(usecols=list(range(15)), worksheet=487806377, ttl=5)
 
 #%% Clean table
 

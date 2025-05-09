@@ -138,6 +138,9 @@ with st.sidebar:
                 st.success("Data added successfully!")
             else:
                 st.error("Please fill out the form correctly.")
+            
+            # Re run page to refresh graphs
+            st.experimental_rerun()
 
 # Header 1
 st.header('Family Aguilar Budget')

@@ -96,11 +96,8 @@ CREDENTIALS_FILE = st.secrets["google"]
 # Connect to the Google Sheet
 sheet_by_name = connect_to_gsheet(CREDENTIALS_FILE, SPREADSHEET_NAME, sheet_name=SHEET_NAME)
 
-# Connect to the Google Sheet - total amount left
-tot_sheet = connect_to_gsheet(CREDENTIALS_FILE, SPREADSHEET_NAME, sheet_name="Budget 2025")
-
 # Get total amount
-m_left = float(tot_sheet.acell('S27').value)
+m_left = round(filtered_df.Balance.sum().item(),2)
 
 def add_data(row):
     sheet_by_name.append_row(row)
@@ -174,4 +171,8 @@ for i in range(filtered_df.shape[0]):
     
     st.plotly_chart(fig, config={"displayModeBar": False})
 
-    st.metric(label="Total Left", value=m_left)
+col1, col2, col3 = st.columns([1, 2, 1]) # Adjust the ratios as needed
+
+with col3: # Place the metric in the middle column
+    # Display the total amount of money left from the Variables
+    st.metric(label="Total Money Left", value=m_left)

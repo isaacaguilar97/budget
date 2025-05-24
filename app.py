@@ -16,9 +16,6 @@ budget_df = conn.read(usecols=list(range(15)), worksheet=832591380, ttl=5)
 # Create raw Actual dataframe
 actual_df = conn.read(usecols=list(range(15)), worksheet=653611236, ttl=5)
 
-# Create raw Actual dataframe
-ledger_df = conn.read(usecols=list(range(6)), worksheet=2076042369, ttl=5)
-
 #%% Clean table
 
 # Make a copy of both dfs

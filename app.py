@@ -14,7 +14,10 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 budget_df = conn.read(usecols=list(range(15)), worksheet=832591380, ttl=5)
 
 # Create raw Actual dataframe
-actual_df = conn.read(usecols=list(range(15)), worksheet=487806377, ttl=5)
+actual_df = conn.read(usecols=list(range(15)), worksheet=653611236, ttl=5)
+
+# Create raw Actual dataframe
+ledger_df = conn.read(usecols=list(range(6)), worksheet=2076042369, ttl=5)
 
 #%% Clean table
 
@@ -25,6 +28,9 @@ a_df = actual_df.copy()
 # Rename columns
 b_df.columns = ["Type", "Buckets"] + list(budget_df.iloc[3])[2:] # Budget
 a_df.columns = ["Type", "Buckets"] + list(actual_df.iloc[3])[2:] # Actual
+
+# Categories input
+categ = b_df[6:48]['Buckets'].drop([12, 13, 25])
 
 # Remove unnecessary rows
 b_df = b_df.iloc[26:48] # Budget
@@ -87,11 +93,14 @@ def connect_to_gsheet(creds_dict, spreadsheet_name, sheet_name):
 
 # Google Sheet credentials and details
 SPREADSHEET_NAME = 'Cash Flow Fam Aguilar'
-SHEET_NAME = 'Real'
+SHEET_NAME = 'Ledger'
 CREDENTIALS_FILE = st.secrets["google"]
 
 # Connect to the Google Sheet
 sheet_by_name = connect_to_gsheet(CREDENTIALS_FILE, SPREADSHEET_NAME, sheet_name=SHEET_NAME)
+
+def add_data(row):
+    sheet_by_name.append_row(row)
 
 #%% Start Streamlit app
 
@@ -102,46 +111,28 @@ with st.sidebar:
 
     with st.form(key="Enter your Transaction"):
         amt = st.number_input("Amount")
-        cty = st.selectbox("Category", final_df.Category.to_list())
-        card = st.selectbox("Payment Method", ['Silver', 'Barclays', 'DFCU', 'Venture', 'Cosco', 'Chase'])
+        cty = st.selectbox("Category", categ.to_list(),index=17)
+        card = st.selectbox("Payment Method", ['Silver', 'Barclays', 'DFCU', 'Venture', 'Cosco', 'Adri Credit', 'Debit', 'Chase', 'Other', 'Sofi Loan'])
         # Submit button inside the form
         submitted = st.form_submit_button("Submit")
         # Handle form submission
         if submitted:
             if amt and cty and card:  # Basic validation to check if required fields are filled
-                # Update Spreadsheet
-                # Get the values of row 5 and column B
-                row_5 = sheet_by_name.row_values(5)
-                col_B = sheet_by_name.col_values(2)
-
-                # Find the column and row indexes
-                col_index = row_5.index(td) + 1
-                row_index = col_B.index(cty) + 1
-
-                # Read current value
-                current_value = sheet_by_name.cell(row_index, col_index).value
-                new_value = float(current_value or 0) + amt
-
-                # Update Category
-                sheet_by_name.update_cell(row_index, col_index, new_value)
-
-                if card != "Chase": # I don't make updates if I paid with my chase
-                    # Update Debt
-                    sheet_by_name.update_cell(row_index, col_index, new_value)
-                    row_index = col_B.index("Deuda") + 1
-                    sheet_by_name.update_cell(row_index, col_index, float(sheet_by_name.cell(row_index, col_index).value)+10)
-
-                    # Update Card
-                    row_index = col_B.index(card) + 1
-                    sheet_by_name.update_cell(row_index, col_index, float(sheet_by_name.cell(row_index, col_index).value)+10)
-
+                
+                # Update General Ledger
+                tdy = datetime.today().strftime("%m/%d/%Y")
+                row = [
+                    datetime.today().strftime("%b"), # today's date
+                    cty,    # category
+                    amt,  # amount
+                    card  # Payment Method
+                ]
+                
+                add_data(row)  # Add data to Google Sheets
                 st.success("Data added successfully!")
             else:
                 st.error("Please fill out the form correctly.")
-            
-            # Re run page to refresh graphs
-            st.experimental_rerun()
-
+       
 # Header 1
 st.header('Family Aguilar Budget')
 

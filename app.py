@@ -30,8 +30,8 @@ a_df.columns = ["Type", "Buckets"] + list(actual_df.iloc[3])[2:] # Actual
 categ = b_df[6:48]['Buckets'].drop([12, 13, 25])
 
 # Remove unnecessary rows
-b_df = b_df.iloc[26:48] # Budget
-a_df = a_df.iloc[26:48] # Actual
+b_df = b_df.iloc[23:48] # Budget
+a_df = a_df.iloc[23:48] # Actual
 
 # Store Type and Buckets array in a Dataframe
 categories = pd.DataFrame({

@@ -73,7 +73,7 @@ final_df = pd.DataFrame({
 })
 
 # Parameters
-col_inter = ['Food', 'Supplies', 'Self Care', 'Isaac', 'Adri', 'Eliam', 'Dates/Fun', 'Gifts', 'Dineout', 'Snacks']
+col_inter = ['Food', 'Supplies', 'Self Care', 'Isaac', 'Adri', 'Eliam', 'Dates/Fun', 'Gifts', 'Dineout', 'Snacks','Carro-Gas','Ropa','Viajes']
 filtered_df = final_df[final_df['Category'].isin(col_inter)]
 
 # Authenticate and connect to Google Sheets
